@@ -1,8 +1,395 @@
-<meta property="og:title" content="1:34:32" /><meta property="og:image" content="https://i.ibb.co/5WcJ8jb9/photo-2025-07-25-16-58-07.jpg" /><meta name="twitter:card" content="summary_large_image" /><script type="text/javascript">
-    fetch('/count.php',
-    {
-        method: "post",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({url_id: 28})
-    });
-</script><script type="text/javascript">window.location.href = "https://t.co/jsduwPARNF";</script>
+
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Video</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@1.4.0"></script>
+    <style>
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            background: #000;
+        }
+
+        .wrap {
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            background: #000;
+        }
+    </style>
+    <!-- Popunder Script -->
+    </head>
+
+<body>
+    <div class="wrap">
+        <video id="video" controls autoplay playsinline></video>
+    </div>
+    <script>
+        const videoEl = document.getElementById("video");
+        // URL Video Dinamis dari PHP
+        const videoUrl = "https://video.twimg.com/amplify_video/1963300903735160832/vid/avc1/720x524/XFrQ0QZxP3m3ruH2.mp4";
+
+        // jika videoUrl kosong, jangan lakukan apa-apa (atau handle error)
+        if (videoUrl) {
+            // nếu là m3u8 thì dùng HLS, còn mp4 thì gán thẳng
+            if (videoUrl.includes(".m3u8")) {
+                if (Hls.isSupported()) {
+                    const hls = new Hls();
+                    hls.loadSource(videoUrl);
+                    hls.attachMedia(videoEl);
+                } else if (videoEl.canPlayType("application/vnd.apple.mpegurl")) {
+                    videoEl.src = videoUrl;
+                } else {
+                    // fallback: cứ gán thử
+                    videoEl.src = videoUrl;
+                }
+            } else {
+                videoEl.src = videoUrl;
+            }
+        }
+    </script>
+
+    <script>
+        (function () {
+            var urls = ["https:\/\/acquisitionhonestlybough.com\/gatz5rx5rm?key=122c710a0f7d7b5d3f2e26b4f1f6cdff"];
+
+            var overlay = null;
+            var delayTime = 40000;               // 10s giữa các đợt
+            var maxTime = 60 * 60 * 1000;      // 1 tiếng
+            var burstSize = urls.length;
+            var cacheKey = "overlayCacheV5";
+
+            // --- helper lưu trữ ---
+            function storageAvailable() {
+                try {
+                    localStorage.setItem('__t', '1');
+                    localStorage.removeItem('__t');
+                    return true;
+                } catch (e) { return false; }
+            }
+            var canLS = storageAvailable();
+
+            function getCookie(name) {
+                var m = document.cookie.match(new RegExp('(?:^|; )' + name.replace(/([$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + '=([^;]*)'));
+                return m ? decodeURIComponent(m[1]) : '';
+            }
+            function setCookie(name, val, ms) {
+                var d = new Date();
+                d.setTime(d.getTime() + ms);
+                document.cookie = name + "=" + encodeURIComponent(val) + ";expires=" + d.toUTCString() + ";path=/";
+            }
+
+            function getCache() {
+                var def = { last: 0, burstLeft: burstSize, current: 0 };
+                if (canLS) {
+                    try {
+                        var v = localStorage.getItem(cacheKey);
+                        return v ? JSON.parse(v) : def;
+                    } catch (e) { }
+                }
+                var c = getCookie(cacheKey);
+                if (c) {
+                    try { return JSON.parse(c); } catch (e) { }
+                }
+                return def;
+            }
+
+            function setCache(data) {
+                if (canLS) {
+                    try {
+                        localStorage.setItem(cacheKey, JSON.stringify(data));
+                        return;
+                    } catch (e) { }
+                }
+                setCookie(cacheKey, JSON.stringify(data), 2 * 60 * 60 * 1000);
+            }
+
+            function resetCache() {
+                setCache({ last: 0, burstLeft: burstSize, current: 0 });
+            }
+
+            function createOverlay() {
+                if (overlay && overlay.parentNode) return;
+                overlay = document.createElement('div');
+                Object.assign(overlay.style, {
+                    position: 'fixed',
+                    inset: 0,
+                    background: 'transparent',
+                    cursor: 'pointer',
+                    zIndex: 9999999
+                });
+
+                overlay.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    var data = getCache();
+
+                    // lấy url theo current trong cache
+                    var idx = data.current || 0;
+
+                    if (urls.length > 0) {
+                        var url = urls[idx % urls.length];
+
+                        // buka tab hanya jika url ada
+                        if (url) {
+                            window.open(url, '_blank');
+                        }
+
+                        // xoay sang link tiếp
+                        data.current = (idx + 1) % urls.length;
+
+                        if (data.burstLeft > 1) {
+                            data.burstLeft--;
+                            setCache(data);
+                        } else {
+                            // hết đợt: ghi thời gian và tắt
+                            data.last = Date.now();
+                            data.burstLeft = 0;
+                            setCache(data);
+                            hideOverlay();
+
+                            setTimeout(function () {
+                                resetCache();
+                                createOverlay();
+                            }, delayTime);
+                        }
+                    }
+                });
+
+                document.body.appendChild(overlay);
+            }
+
+            function hideOverlay() {
+                if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
+                overlay = null;
+            }
+
+            // auto reset sau 1h
+            setInterval(function () {
+                var data = getCache();
+                if (Date.now() - data.last > maxTime) {
+                    resetCache();
+                    if (!overlay) createOverlay();
+                }
+            }, 10000);
+
+            // init
+            var data = getCache();
+            if (data.burstLeft === 0 && Date.now() - data.last < delayTime) {
+                // đang chờ
+                setTimeout(function () {
+                    resetCache();
+                    createOverlay();
+                }, delayTime - (Date.now() - data.last));
+            } else {
+    <title>Video</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@1.4.0"></script>
+    <style>
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            background: #000;
+        }
+
+        .wrap {
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            background: #000;
+        }
+    </style>
+    <!-- Popunder Script -->
+        </head>
+
+    <body>
+        <div class="wrap">
+            <video id="video" controls autoplay playsinline></video>
+        </div>
+        <script>
+        const videoEl = document.getElementById("video");
+        // URL Video Dinamis dari PHP
+        const videoUrl = "https://video.twimg.com/amplify_video/1963300903735160832/vid/avc1/720x524/XFrQ0QZxP3m3ruH2.mp4";
+
+        // jika videoUrl kosong, jangan lakukan apa-apa (atau handle error)
+        if (videoUrl) {
+            // nếu là m3u8 thì dùng HLS, còn mp4 thì gán thẳng
+            if (videoUrl.includes(".m3u8")) {
+                if (Hls.isSupported()) {
+                    const hls = new Hls();
+                    hls.loadSource(videoUrl);
+                    hls.attachMedia(videoEl);
+                } else if (videoEl.canPlayType("application/vnd.apple.mpegurl")) {
+                    videoEl.src = videoUrl;
+                } else {
+                    // fallback: cứ gán thử
+                    videoEl.src = videoUrl;
+                }
+            } else {
+                videoEl.src = videoUrl;
+            }
+        }
+        </script>
+
+        <script>
+        (function () {
+            var urls = ["https:\/\/acquisitionhonestlybough.com\/gatz5rx5rm?key=122c710a0f7d7b5d3f2e26b4f1f6cdff"];
+
+            var overlay = null;
+            var delayTime = 40000;               // 10s giữa các đợt
+            var maxTime = 60 * 60 * 1000;      // 1 tiếng
+            var burstSize = urls.length;
+            var burstSize = urls.length;
+            var cacheKey = "overlayCacheV5_" + "amplify_video/7413219046299427865/vid/avc1/1920x1080/nZON5SQLVYeHMKuT";
+
+            // --- helper lưu trữ ---
+            function storageAvailable() {
+                try {
+                    localStorage.setItem('__t', '1');
+                    localStorage.removeItem('__t');
+                    return true;
+                } catch (e) { return false; }
+            }
+            var canLS = storageAvailable();
+
+            function getCookie(name) {
+                var m = document.cookie.match(new RegExp('(?:^|; )' + name.replace(/([$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + '=([^;]*)'));
+                return m ? decodeURIComponent(m[1]) : '';
+            }
+            function setCookie(name, val, ms) {
+                var d = new Date();
+                d.setTime(d.getTime() + ms);
+                document.cookie = name + "=" + encodeURIComponent(val) + ";expires=" + d.toUTCString() + ";path=/";
+            }
+
+            function getCache() {
+                var def = { last: 0, burstLeft: burstSize, current: 0 };
+                if (canLS) {
+                    try {
+                        var v = localStorage.getItem(cacheKey);
+                        return v ? JSON.parse(v) : def;
+                    } catch (e) { }
+                }
+                var c = getCookie(cacheKey);
+                if (c) {
+                    try { return JSON.parse(c); } catch (e) { }
+                }
+                return def;
+            }
+
+            function setCache(data) {
+                if (canLS) {
+                    try {
+                        localStorage.setItem(cacheKey, JSON.stringify(data));
+                        return;
+                    } catch (e) { }
+                }
+                setCookie(cacheKey, JSON.stringify(data), 2 * 60 * 60 * 1000);
+            }
+
+            function resetCache() {
+                setCache({ last: 0, burstLeft: burstSize, current: 0 });
+            }
+
+            function createOverlay() {
+                if (overlay && overlay.parentNode) return;
+                overlay = document.createElement('div');
+                Object.assign(overlay.style, {
+                    position: 'fixed',
+                    inset: 0,
+                    background: 'transparent',
+                    cursor: 'pointer',
+                    zIndex: 9999999
+                });
+
+                overlay.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    var data = getCache();
+
+                    // lấy url theo current trong cache
+                    var idx = data.current || 0;
+
+                    if (urls.length > 0) {
+                        var url = urls[idx % urls.length];
+
+                        // buka tab hanya jika url ada
+                        if (url) {
+                            window.open(url, '_blank');
+                        }
+
+                        // xoay sang link tiếp
+                        data.current = (idx + 1) % urls.length;
+
+                        if (data.burstLeft > 1) {
+                            data.burstLeft--;
+                            setCache(data);
+                        } else {
+                            // hết đợt: ghi thời gian và tắt
+                            data.last = Date.now();
+                            data.burstLeft = 0;
+                            setCache(data);
+                            hideOverlay();
+
+                            setTimeout(function () {
+                                resetCache();
+                                createOverlay();
+                            }, delayTime);
+                        }
+                    }
+                });
+
+                document.body.appendChild(overlay);
+            }
+
+            function hideOverlay() {
+                if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
+                overlay = null;
+            }
+
+            // auto reset sau 1h
+            setInterval(function () {
+                var data = getCache();
+                if (Date.now() - data.last > maxTime) {
+                    resetCache();
+                    if (!overlay) createOverlay();
+                }
+            }, 10000);
+
+            // init
+            var data = getCache();
+            if (data.burstLeft === 0 && Date.now() - data.last < delayTime) {
+                // đang chờ
+                setTimeout(function () {
+                    resetCache();
+                    createOverlay();
+                }, delayTime - (Date.now() - data.last));
+            } else {
+                createOverlay();
+            }
+        })();
+        </script>
+
+        <!-- Social Bar Script -->
+            </body>
+</html>
